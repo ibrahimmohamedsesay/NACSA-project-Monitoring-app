@@ -59,3 +59,7 @@ Role-based access on every view; CSRF on all forms; login lockout after 5 failur
 
 ## Known limits
 No SMS/email delivery by default (in-system notifications only; reset links print to the console). No offline data capture (the UI warns when the connection drops). No GPS map view. Single-language (English).
+
+## Repository
+This repository contains the completed NaCSA project monitoring system for GitHub hosting and deployment.
+
