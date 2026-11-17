@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><h1>User management</h1><div class="sub">Create accounts, assign roles and deactivate users. Administrator only.</div></div><a class="btn btn-green" href="{% url 'accounts:user_create' %}"><i class="bi bi-plus-lg"></i> Add user</a></div>
+<form class="filters" method="get"><input name="q" value="{{ q }}" placeholder="Search name, username, email"><select name="role"><option value="">All roles</option>{% for r in roles %}<option value="{{ r.name }}" {% if r.name == sel_role %}selected{% endif %}>{{ r }}</option>{% endfor %}</select><select name="status"><option value="">Any status</option><option value="active" {% if sel_status == 'active' %}selected{% endif %}>Active</option><option value="inactive" {% if sel_status == 'inactive' %}selected{% endif %}>Inactive</option></select><button class="btn" type="submit">Filter</button></form>
+<div class="card flush">{% if page.object_list %}
+<table class="table responsive"><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Status</th><th>Last login</th><th></th></tr></thead><tbody>
+{% for u in page %}<tr><td data-label="Name"><b>{{ u }}</b><div class="muted small">{{ u.email }}</div></td><td data-label="Username">{{ u.username }}</td><td data-label="Role">{{ u.role|default:"—" }}</td><td data-label="Department">{{ u.department|default:"—" }}</td><td data-label="Status">{% if u.is_active %}{% badge "completed" "Active" %}{% else %}{% badge "closed" "Inactive" %}{% endif %}</td><td data-label="Last login">{{ u.last_login|date:"d M Y H:i"|default:"Never" }}</td>
+<td class="actions"><a class="btn btn-sm btn-outline" href="{% url 'accounts:user_edit' u.pk %}">Edit</a>
+<form method="post" action="{% url 'accounts:user_toggle' u.pk %}" style="display:inline" data-confirm="{% if u.is_active %}Deactivate{% else %}Activate{% endif %} {{ u.username }}?">{% csrf_token %}<button class="btn btn-sm btn-outline" type="submit">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button></form></td></tr>{% endfor %}
+</tbody></table>{% else %}{% include "partials/_empty.html" with title="No users match" %}{% endif %}</div>
+{% pagination page params %}
+{% endblock %}

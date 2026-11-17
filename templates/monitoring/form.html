@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'projects:detail' p.pk %}?tab=monitoring">{{ p.project_id }}</a></div><h1>{{ heading }}</h1><div class="sub">{{ p.name }} · current progress {{ p.completion_percentage }}%</div></div></div>
+<div class="card" style="max-width:860px"><form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="alert error">{{ form.non_field_errors }}</div>{% endif %}
+<div class="form-grid">{% for f in form %}<div class="{% if f.field.widget.attrs.rows %}full{% endif %}">{% field f %}</div>{% endfor %}</div>
+<div class="actions"><button class="btn btn-green" type="submit">Save</button><a class="btn btn-outline" href="{% url 'projects:detail' p.pk %}?tab=monitoring">Cancel</a></div></form></div>
+{% endblock %}

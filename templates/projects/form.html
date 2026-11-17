@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'projects:list' %}">Projects</a> / {% if p %}{{ p.project_id }}{% else %}New{% endif %}</div><h1>{{ page_title }}</h1><div class="sub">Complete each step. You can save as a draft and submit for approval later.</div></div></div>
+<form method="post" novalidate data-steps class="card">{% csrf_token %}
+{% if form.non_field_errors %}<div class="alert error">{{ form.non_field_errors }}</div>{% endif %}
+<div class="steps-nav"><button>1. Basic information</button><button>2. Location</button><button>3. Budget &amp; schedule</button><button>4. Team &amp; beneficiaries</button><button>5. Objectives{% if creating %} &amp; activities{% endif %}</button><button>6. Review</button></div>
+<div class="step-pane"><div class="form-grid"><div class="full">{% field form.name %}</div>{% field form.project_type %}{% field form.implementing_organization %}<div class="full">{% field form.description %}</div></div></div>
+<div class="step-pane"><div class="form-grid">{% field form.district %}{% field form.chiefdom %}{% field form.community %}{% field form.ward %}<div class="full">{% field form.gps_coordinates %}</div></div></div>
+<div class="step-pane"><div class="form-grid">{% field form.budget %}<span></span>{% field form.start_date %}{% field form.expected_completion_date %}</div></div>
+<div class="step-pane"><div class="form-grid">{% field form.officer %}{% field form.target_beneficiaries %}</div></div>
+<div class="step-pane"><div class="form-grid"><div class="full">{% field form.objectives %}</div>{% if form.initial_activities %}<div class="full">{% field form.initial_activities %}</div>{% endif %}</div></div>
+<div class="step-pane"><h2>Review your entries</h2><div id="review-box"></div><p class="muted small">Choose <b>Save draft</b> to keep editing later, or <b>Save &amp; submit</b> to send it for approval.</p></div>
+<div class="actions mt-s"><button type="button" class="btn btn-outline prev">‹ Back</button><button type="button" class="btn next">Next ›</button>
+<span class="finish actions"><button type="submit" class="btn btn-outline">Save draft</button><button type="submit" name="submit" value="1" class="btn btn-green">Save &amp; submit for approval</button></span>
+<a class="btn btn-outline" href="{% if p %}{% url 'projects:detail' p.pk %}{% else %}{% url 'projects:list' %}{% endif %}">Cancel</a></div>
+</form>
+{% endblock %}

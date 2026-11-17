@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><h1>My profile</h1><div class="sub">{{ user_role_label }} · username <b>{{ user.username }}</b></div></div><a class="btn btn-outline" href="{% url 'accounts:password_change' %}"><i class="bi bi-key"></i> Change password</a></div>
+<div class="card" style="max-width:760px">{% include "partials/_form_card.html" with submit_label="Save profile" cancel_url="/" %}</div>
+{% endblock %}

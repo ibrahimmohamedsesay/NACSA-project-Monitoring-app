@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><h1>Data quality</h1><div class="sub">Automatic checks that help keep records complete and trustworthy.</div></div></div>
+<div class="card flush"><table class="table responsive"><thead><tr><th>Check</th><th>Records</th><th>Result</th></tr></thead><tbody>{% for label, n, area in checks %}<tr><td data-label="Check">{{ label }}</td><td data-label="Records"><b>{{ n }}</b></td><td data-label="Result">{% if n == 0 %}{% badge "completed" "OK" %}{% else %}{% badge "at_risk" "Needs attention" %}{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

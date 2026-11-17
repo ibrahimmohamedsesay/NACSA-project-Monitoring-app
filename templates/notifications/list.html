@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><h1>Notifications</h1><div class="sub">System events that need your attention.</div></div><div class="actions"><a class="btn btn-outline" href="?filter={% if f == 'unread' %}{% else %}unread{% endif %}">{% if f == 'unread' %}Show all{% else %}Unread only{% endif %}</a><form method="post" action="{% url 'notifications:read_all' %}">{% csrf_token %}<button class="btn" type="submit">Mark all as read</button></form></div></div>
+<div class="card">{% if page.object_list %}<ul class="list-plain">{% for n in page %}<li><div><a href="{% url 'notifications:open' n.pk %}" style="{% if not n.is_read %}font-weight:700{% endif %}">{{ n.message }}</a><div class="muted small">{{ n.get_event_type_display }} · {{ n.created_at|timesince }} ago</div></div>{% if not n.is_read %}<span class="badge badge-info">New</span>{% endif %}</li>{% endfor %}</ul>{% else %}{% include "partials/_empty.html" with icon="bi-bell" title="No notifications" text="You are all caught up." %}{% endif %}</div>{% pagination page params %}
+{% endblock %}

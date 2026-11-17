@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><h1>Search results</h1><div class="sub">{% if q %}for “{{ q }}”{% else %}Type a project name, ID, district, beneficiary or case number in the search bar.{% endif %}</div></div></div>
+{% for key, items in res.items %}{% if items %}<div class="card"><h2 style="text-transform:capitalize">{{ key }}</h2><ul class="list-plain">
+{% for i in items %}<li>{% if key == 'projects' %}<a href="{% url 'projects:detail' i.pk %}"><b>{{ i.name }}</b></a><span class="muted small">{{ i.project_id }} · {{ i.district }}</span>
+{% elif key == 'beneficiaries' %}<a href="{% url 'beneficiaries:detail' i.pk %}"><b>{{ i.name }}</b></a><span class="muted small">{{ i.community }}</span>
+{% elif key == 'documents' %}<a href="{% url 'documents:list' %}?q={{ i.project.project_id }}">{{ i.get_category_display }} — {{ i.project.name }}</a>
+{% else %}<a href="{% url 'grm:detail' i.pk %}"><b>{{ i.case_id }}</b></a><span class="muted small">{{ i.complainant }} · {{ i.category }}</span>{% endif %}</li>{% endfor %}</ul></div>{% endif %}{% empty %}{% endfor %}
+{% if q %}{% if not res.projects and not res.beneficiaries and not res.documents and not res.cases %}<div class="card">{% include "partials/_empty.html" with title="No results" text="Try a different keyword." %}</div>{% endif %}{% endif %}
+{% endblock %}

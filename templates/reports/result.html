@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'reports:index' %}">Reports</a> / <a href="{% url 'reports:run' kind %}">{{ meta.0 }}</a></div><h1>{{ title }}</h1><div class="sub">Generated {{ generated|date:"d M Y H:i" }} · DEMO DATA</div></div>
+<div class="actions"><button class="btn btn-outline" data-print type="button"><i class="bi bi-printer"></i> Print</button><a class="btn btn-outline" href="?{{ qs }}&format=pdf"><i class="bi bi-file-pdf"></i> PDF</a><a class="btn btn-outline" href="?{{ qs }}&format=excel"><i class="bi bi-file-excel"></i> Excel</a><a class="btn btn-outline" href="?{{ qs }}&format=csv">CSV</a></div></div>
+<div class="grid g4 mb-s">{% for k, v in summary %}<div class="stat"><div class="label">{{ k }}</div><div class="value" style="font-size:22px">{{ v }}</div></div>{% endfor %}</div>
+<div class="card flush">{% if rows %}<div style="overflow-x:auto"><table class="table"><thead><tr>{% for c in cols %}<th>{{ c }}</th>{% endfor %}</tr></thead><tbody>{% for r in rows %}<tr>{% for c in r %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>{% else %}{% include "partials/_empty.html" with icon="bi-file-earmark-x" title="No records match these filters" text="Change the filters and try again." %}{% endif %}</div>
+{% endblock %}

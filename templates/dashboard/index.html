@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% load nacsa_tags humanize %}
+{% block content %}
+<div class="page-head"><div><h1>Dashboard</h1><div class="sub">Welcome, {{ user.first_name|default:user.username }} — {{ user_role_label }}. Live figures from the system database.</div></div>
+{% can user "projects" "add" as cp %}{% if cp %}<a class="btn btn-green" href="{% url 'projects:create' %}"><i class="bi bi-plus-lg"></i> Register project</a>{% endif %}</div>
+{% if is_empty %}<div class="card">{% include "partials/_empty.html" with icon="bi-folder2-open" title="No projects registered yet" text="Register the first community project to see statistics and charts here." %}</div>{% else %}
+<div class="grid g4 mb-s">
+ <div class="stat"><div class="label">Total projects <i class="bi bi-folder2-open"></i></div><div class="value">{{ stats.total }}</div><div class="hint">{{ stats.active }} active</div></div>
+ <div class="stat green"><div class="label">Ongoing <i class="bi bi-play-circle"></i></div><div class="value">{{ stats.ongoing }}</div><div class="hint">Average progress {{ avg_progress }}%</div></div>
+ <div class="stat green"><div class="label">Completed <i class="bi bi-check-circle"></i></div><div class="value">{{ stats.completed }}</div><div class="hint">Delivered projects</div></div>
+ <div class="stat red"><div class="label">Delayed <i class="bi bi-exclamation-triangle"></i></div><div class="value">{{ stats.delayed }}</div><div class="hint">{{ stats.at_risk }} more at risk</div></div>
+</div>
+<div class="grid g4 mb-s">
+ <div class="stat orange"><div class="label">Awaiting approval <i class="bi bi-hourglass-split"></i></div><div class="value">{{ stats.pending_approval }}</div><div class="hint">Submitted / under review</div></div>
+ {% if beneficiaries != None %}<div class="stat"><div class="label">Beneficiaries <i class="bi bi-people"></i></div><div class="value">{{ beneficiaries|intcomma }}</div><div class="hint">{{ serviced|intcomma }} serviced</div></div>{% endif %}
+ {% if paid != None %}<div class="stat green"><div class="label">Payments made <i class="bi bi-cash-coin"></i></div><div class="value" style="font-size:22px">{{ paid|nle }}</div><div class="hint">Pending: {{ pending_pay|nle }}</div></div>{% endif %}
+ {% if open_grm != None %}<div class="stat orange"><div class="label">Open grievances <i class="bi bi-chat-left-text"></i></div><div class="value">{{ open_grm }}</div><div class="hint">Open / under review</div></div>{% endif %}
+ {% if pending_reviews != None %}<div class="stat orange"><div class="label">Updates to review <i class="bi bi-clipboard-check"></i></div><div class="value">{{ pending_reviews }}</div><div class="hint">Field progress awaiting M&amp;E</div></div>{% endif %}
+ <div class="stat"><div class="label">Portfolio budget <i class="bi bi-wallet2"></i></div><div class="value" style="font-size:22px">{{ stats.budget|nle }}</div><div class="hint">All registered projects</div></div>
+</div>
+<div class="grid g3 mb-s">
+ <div class="card"><h2>Projects by status</h2><div class="chart-box"><canvas id="chStatus" aria-label="Projects by status"></canvas></div></div>
+ <div class="card"><h2>Projects by district</h2><div class="chart-box"><canvas id="chDistrict" aria-label="Projects by district"></canvas></div></div>
+ <div class="card"><h2>Projects by type</h2><div class="chart-box"><canvas id="chTypes" aria-label="Projects by type"></canvas></div></div>
+</div>
+<div class="grid g2">
+ <div class="card"><h2>Needs attention</h2>{% if delayed_projects %}<ul class="list-plain">{% for p in delayed_projects %}<li><div><a href="{% url 'projects:detail' p.pk %}"><b>{{ p.name }}</b></a><div class="muted small">{{ p.project_id }} · {{ p.district }} · due {{ p.expected_completion_date|date:"d M Y" }}</div></div><div>{% badge p.health %}</div></li>{% endfor %}</ul>{% else %}<div class="muted">No delayed or at-risk projects.</div>{% endif %}</div>
+ <div class="card"><h2>Recently updated projects</h2><ul class="list-plain">{% for p in recent_projects %}<li><div><a href="{% url 'projects:detail' p.pk %}"><b>{{ p.name }}</b></a><div class="muted small">{{ p.project_id }} · {{ p.district }}</div></div><div style="min-width:110px"><div class="progress"><i style="width:{{ p.completion_percentage }}%"></i></div><div class="small muted" style="text-align:right">{{ p.completion_percentage }}%</div></div></li>{% endfor %}</ul></div>
+ {% if awaiting %}<div class="card"><h2>Awaiting your approval</h2><ul class="list-plain">{% for p in awaiting %}<li><div><a href="{% url 'projects:detail' p.pk %}"><b>{{ p.name }}</b></a><div class="muted small">{{ p.project_id }} · {{ p.district }}</div></div>{% badge p.status %}</li>{% endfor %}</ul></div>{% endif %}
+ {% if recent_updates %}<div class="card"><h2>Latest field updates</h2><ul class="list-plain">{% for r in recent_updates %}<li><div><b>{{ r.project.name }}</b><div class="muted small">{{ r.officer }} · {{ r.date|date:"d M Y" }} · {{ r.progress_percentage }}%</div></div>{% badge r.review_status %}</li>{% endfor %}</ul></div>{% endif %}
+ {% if activity %}<div class="card"><h2>Recent system activity</h2><ul class="list-plain">{% for a in activity %}<li><div>{{ a.description|default:a.action }}<div class="muted small">{{ a.user|default:"System" }} · {{ a.module }}</div></div><span class="muted small">{{ a.timestamp|timesince }} ago</span></li>{% endfor %}</ul></div>{% endif %}
+</div>{% endif %}
+{{ chart_data|json_script:"chartData" }}
+{% endblock %}
+{% block scripts %}{% load static %}<script src="{% static 'vendor/chartjs/chart.umd.js' %}"></script>
+<script>
+(function(){var el=document.getElementById('chartData');if(!el||!window.Chart)return;var d=JSON.parse(el.textContent);
+var pal=['#123B6D','#16803A','#F59E0B','#2563EB','#DC2626','#7C3AED','#0891B2','#64748B','#84CC16','#DB2777','#EA580C'];
+function mk(id,type,data,opt){var c=document.getElementById(id);if(!c)return;if(!data.values.length){c.parentNode.innerHTML='<div class="empty">No data yet</div>';return}
+new Chart(c,{type:type,data:{labels:data.labels,datasets:[{data:data.values,backgroundColor:type==='bar'?'#123B6D':pal,borderWidth:0,borderRadius:type==='bar'?4:0}]},options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type!=='bar',position:'bottom',labels:{boxWidth:12,font:{size:11}}}}},opt||{})})}
+mk('chStatus','doughnut',d.status,{cutout:'62%'});mk('chDistrict','bar',d.district,{indexAxis:'y',scales:{x:{ticks:{precision:0}}}});mk('chTypes','bar',d.types,{scales:{y:{ticks:{precision:0}}}});})();
+</script>{% endblock %}

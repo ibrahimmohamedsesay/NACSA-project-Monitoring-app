@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><h1>Reports &amp; analytics</h1><div class="sub">Choose a report, set filters, then preview, print or export to PDF / Excel. Figures come straight from the database.</div></div>{% if show_quality %}<a class="btn btn-outline" href="{% url 'reports:quality' %}"><i class="bi bi-clipboard2-check"></i> Data quality</a>{% endif %}</div>
+<div class="grid g3">{% for key, title, desc in reports %}<a class="card" href="{% url 'reports:run' key %}" style="color:inherit"><h2><i class="bi bi-file-earmark-bar-graph" style="color:var(--green)"></i> {{ title }}</h2><p class="muted">{{ desc }}</p></a>{% empty %}<div class="card">No reports are available for your role.</div>{% endfor %}</div>
+{% endblock %}

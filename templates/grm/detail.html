@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'grm:list' %}">GRM cases</a></div><h1>{{ c.case_id }}</h1><div class="sub">{% badge c.status %} · {{ c.category }} · opened {{ c.created_at|date:"d M Y" }}</div></div></div>
+<div class="grid g-main"><div><div class="card"><h2>Complaint</h2><dl class="dl"><dt>Complainant</dt><dd>{{ c.complainant }}</dd><dt>Project</dt><dd>{% if c.project %}<a href="{% url 'projects:detail' c.project.pk %}">{{ c.project }}</a>{% else %}—{% endif %}</dd><dt>Assigned to</dt><dd>{{ c.assigned_to|default:"Unassigned" }}</dd><dt>Description</dt><dd>{{ c.description|linebreaksbr }}</dd></dl></div>
+<div class="card"><h2>Case history</h2><ul class="timeline">{% for a in activities %}<li><b>{{ a.action }}</b> <span class="muted small">{{ a.created_by }} · {{ a.created_at|date:"d M Y H:i" }}</span>{% if a.notes %}<div class="small">{{ a.notes|linebreaksbr }}</div>{% endif %}</li>{% empty %}<li class="muted">No activity logged yet.</li>{% endfor %}</ul></div></div>
+{% can user "grm" "edit" as ce %}{% if ce %}<div class="card"><h2>Log action</h2><form method="post" novalidate>{% csrf_token %}{% for f in form %}{% field f %}{% endfor %}<button class="btn btn-green" type="submit">Save</button></form></div>{% endif %}</div>
+{% endblock %}

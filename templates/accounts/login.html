@@ -1,0 +1,13 @@
+{% extends "accounts/auth_base.html" %}{% load nacsa_tags %}
+{% block box %}
+<h1 style="font-size:26px">Welcome back</h1><p class="muted mb-s">Sign in with your NaCSA staff account.</p>
+<form method="post" novalidate>{% csrf_token %}
+{% if form.errors %}<div class="alert error" role="alert"><i class="bi bi-exclamation-circle"></i><div>Invalid username or password. Please check your details and try again. After repeated failures the account is temporarily locked.</div></div>{% endif %}
+{% if locked %}<div class="alert warning">Too many failed attempts. Please wait a few minutes and try again, or contact your administrator.</div>{% endif %}
+<input type="hidden" name="next" value="{{ next }}">
+<div class="fgroup"><label for="{{ form.username.id_for_label }}">Username or email</label>{{ form.username }}</div>
+<div class="fgroup"><label for="{{ form.password.id_for_label }}">Password</label><div class="pwbox">{{ form.password }}<button type="button">Show</button></div></div>
+<div class="fgroup" style="display:flex;justify-content:space-between;align-items:center"><label style="margin:0;display:flex;gap:8px;align-items:center">{{ form.remember_me }} Remember me</label><a href="{% url 'accounts:password_reset' %}">Forgot password?</a></div>
+<button class="btn btn-green" style="width:100%" type="submit">Sign in</button>
+<p class="muted mt-s" style="text-align:center;margin-top:12px">Need an account? <a href="{% url 'accounts:register' %}">Create one</a></p></form>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'projects:detail' p.pk %}">{{ p.project_id }}</a> / Review</div><h1>Review: {{ p.name }}</h1><div class="sub">Check the registration details, then record your decision.</div></div></div>
+<div class="grid g-main">
+<div class="card"><h2>Project details</h2><dl class="dl"><dt>Project ID</dt><dd>{{ p.project_id }}</dd><dt>Type</dt><dd>{{ p.project_type|default:"—" }}</dd><dt>Location</dt><dd>{{ p.community }}, {{ p.chiefdom }}, {{ p.district }}</dd><dt>Budget</dt><dd>{{ p.budget|nle }}</dd><dt>Schedule</dt><dd>{{ p.start_date|date:"d M Y" }} – {{ p.expected_completion_date|date:"d M Y" }}</dd><dt>Target beneficiaries</dt><dd>{{ p.target_beneficiaries }}</dd><dt>Implementer</dt><dd>{{ p.implementing_organization|default:"—" }}</dd><dt>Registered by</dt><dd>{{ p.created_by|default:"—" }}</dd><dt>Objectives</dt><dd>{{ p.objectives|linebreaksbr|default:"—" }}</dd><dt>Description</dt><dd>{{ p.description|linebreaksbr|default:"—" }}</dd></dl>
+<h3 class="mt-s">Planned activities</h3><ul>{% for a in p.activities.all %}<li>{{ a.name }}</li>{% empty %}<li class="muted">None listed</li>{% endfor %}</ul></div>
+<div class="card"><h2>Your decision</h2><form method="post" novalidate>{% csrf_token %}{% for f in form %}{% field f %}{% endfor %}<div class="actions"><button class="btn btn-green" type="submit">Record decision</button><a class="btn btn-outline" href="{% url 'projects:detail' p.pk %}">Cancel</a></div></form></div></div>
+{% endblock %}

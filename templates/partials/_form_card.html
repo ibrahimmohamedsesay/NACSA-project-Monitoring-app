@@ -1,0 +1,7 @@
+{% load nacsa_tags %}
+<form method="post" enctype="multipart/form-data" novalidate>
+{% csrf_token %}
+{% if form.non_field_errors %}<div class="alert error">{{ form.non_field_errors }}</div>{% endif %}
+<div class="form-grid">{% for f in form %}<div class="{% if f.field.widget.attrs.full or f.field.widget.attrs.rows %}full{% endif %}">{% field f %}</div>{% endfor %}</div>
+<div class="actions mt-s"><button type="submit" class="btn btn-green">{{ submit_label|default:"Save" }}</button><a class="btn btn-outline" href="{{ cancel_url|default:'javascript:history.back()' }}">Cancel</a></div>
+</form>

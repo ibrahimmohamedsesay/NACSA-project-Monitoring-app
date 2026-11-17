@@ -1,0 +1,10 @@
+{% load static %}<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Sign in{% endblock %} · NaCSA CPMMS</title><link rel="icon" href="{% static 'img/nacsa_logo.jpg' %}">
+<link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}"><link rel="stylesheet" href="{% static 'css/nacsa.css' %}"></head>
+<body><div class="auth">
+<section class="left"><img src="{% static 'img/nacsa_logo.jpg' %}" alt="NaCSA logo"><h1>NaCSA Community Project Management &amp; Monitoring System</h1>
+<p>Design and Evaluation of a Digital Community Project Monitoring and Verification System for NaCSA Projects in Sierra Leone.</p>
+<ul><li>Register, approve and monitor community projects</li><li>Verify progress with evidence and a review step</li><li>Beneficiaries, payments, grievances and documents in one record</li><li>Role-based access and a full audit trail</li></ul>
+<p class="small muted" style="color:#94a3b8">Prototype · DEMO DATA only · does not replace NaCSA’s MIS</p></section>
+<section class="right"><div class="box">{% if messages %}<div class="alerts">{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}</div>{% endif %}{% block box %}{% endblock %}</div></section>
+</div><script src="{% static 'js/nacsa.js' %}"></script></body></html>

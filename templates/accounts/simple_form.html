@@ -1,0 +1,6 @@
+{% extends "accounts/auth_base.html" %}{% load nacsa_tags %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block box %}<h1 style="font-size:24px">{{ page_title }}</h1><p class="muted mb-s">{{ intro }}</p>
+{% if body %}{{ body }}{% endif %}
+{% if form %}<form method="post" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="alert error">{{ form.non_field_errors }}</div>{% endif %}{% for f in form %}{% field f %}{% endfor %}<button class="btn btn-green" style="width:100%" type="submit">{{ submit_label|default:"Continue" }}</button></form>{% endif %}
+<p class="mt-s"><a href="{% url 'accounts:login' %}">← Back to sign in</a></p>{% endblock %}

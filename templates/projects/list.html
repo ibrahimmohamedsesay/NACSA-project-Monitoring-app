@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><h1>Projects</h1><div class="sub">{{ total }} project{{ total|pluralize }} {% if g.archived == '1' %}(archived){% endif %}</div></div>
+<div class="actions"><a class="btn btn-outline" href="?{% if g.archived == '1' %}{% else %}archived=1{% endif %}">{% if g.archived == '1' %}Show active{% else %}Show archived{% endif %}</a>{% can user "projects" "add" as cp %}{% if cp %}<a class="btn btn-green" href="{% url 'projects:create' %}"><i class="bi bi-plus-lg"></i> Register project</a>{% endif %}</div></div>
+<form class="filters" method="get">
+ <div class="ff"><label>Search</label><input name="q" value="{{ g.q }}" placeholder="Name, ID, community…"></div>
+ <div class="ff"><label>Status</label><select name="status"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if g.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+ <div class="ff"><label>District</label><select name="district"><option value="">All</option>{% for d in districts %}<option {% if g.district == d %}selected{% endif %}>{{ d }}</option>{% endfor %}</select></div>
+ <div class="ff"><label>Type</label><select name="type"><option value="">All</option>{% for t in types %}<option {% if g.type == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+ <div class="ff"><label>Officer</label><select name="officer"><option value="">All</option>{% for o in officers %}<option value="{{ o.pk }}" {% if g.officer == o.pk|stringformat:"s" %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></div>
+ <div class="ff"><label>Health</label><select name="health"><option value="">Any</option>{% for h in "On track,At risk,Delayed"|cut:"" %}{% endfor %}<option {% if g.health == 'On track' %}selected{% endif %}>On track</option><option {% if g.health == 'At risk' %}selected{% endif %}>At risk</option><option {% if g.health == 'Delayed' %}selected{% endif %}>Delayed</option></select></div>
+ <div class="ff"><label>Starts after</label><input type="date" name="from" value="{{ g.from }}"></div>
+ <div class="ff"><label>Ends before</label><input type="date" name="to" value="{{ g.to }}"></div>
+ <button class="btn" type="submit">Apply</button><a class="btn btn-outline" href="{% url 'projects:list' %}">Reset</a>
+</form>
+<div class="card flush">{% if page.object_list %}
+<table class="table responsive"><thead><tr><th>ID</th><th>Project</th><th>District</th><th>Status</th><th>Health</th><th>Progress</th><th>Budget</th><th>Due</th></tr></thead><tbody>
+{% for p in page %}<tr>
+<td data-label="ID"><a href="{% url 'projects:detail' p.pk %}">{{ p.project_id }}</a></td>
+<td data-label="Project"><b>{{ p.name }}</b><div class="muted small">{{ p.project_type }} · {{ p.officer|default:"No officer" }}</div></td>
+<td data-label="District">{{ p.district }}</td><td data-label="Status">{% badge p.status %}</td><td data-label="Health">{% badge p.health %}</td>
+<td data-label="Progress"><div class="progress {{ p.completion_percentage|pct_color }}"><i style="width:{{ p.completion_percentage }}%"></i></div><span class="small muted">{{ p.completion_percentage }}%</span></td>
+<td data-label="Budget">{{ p.budget|nle }}</td><td data-label="Due">{{ p.expected_completion_date|date:"d M Y" }}</td></tr>{% endfor %}
+</tbody></table>{% else %}{% include "partials/_empty.html" with icon="bi-folder2-open" title="No projects found" text="Change the filters or register a new project." %}{% endif %}</div>
+{% pagination page params %}
+{% endblock %}

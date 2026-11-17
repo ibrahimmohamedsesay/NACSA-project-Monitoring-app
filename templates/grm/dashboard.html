@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% load nacsa_tags %}
+{% block content %}
+<div class="page-head"><div><h1>Grievance redress mechanism</h1><div class="sub">Register, investigate and resolve community complaints.</div></div><div class="actions"><a class="btn btn-outline" href="{% url 'grm:list' %}">All cases</a>{% can user "grm" "add" as ca %}{% if ca %}<a class="btn btn-green" href="{% url 'grm:create' %}"><i class="bi bi-plus-lg"></i> Register grievance</a>{% endif %}</div></div>
+<div class="grid g4 mb-s"><div class="stat orange"><div class="label">Open</div><div class="value">{{ st.open|default:0 }}</div></div><div class="stat orange"><div class="label">Under review</div><div class="value">{{ st.under_review|default:0 }}</div></div><div class="stat green"><div class="label">Resolved</div><div class="value">{{ st.resolved|default:0 }}</div></div><div class="stat"><div class="label">Closed</div><div class="value">{{ st.closed|default:0 }}</div></div></div>
+<div class="grid g2"><div class="card"><h2>By category</h2><ul class="list-plain">{% for c in by_category %}<li><span>{{ c.category }}</span><b>{{ c.n }}</b></li>{% empty %}<li class="muted">No cases.</li>{% endfor %}</ul></div>
+<div class="card"><h2>Oldest unresolved</h2><ul class="list-plain">{% for c in open_old %}<li><div><a href="{% url 'grm:detail' c.pk %}"><b>{{ c.case_id }}</b></a><div class="muted small">{{ c.complainant }} · {{ c.created_at|timesince }} old</div></div>{% badge c.status %}</li>{% empty %}<li class="muted">None 🎉</li>{% endfor %}</ul></div></div>
+{% endblock %}
